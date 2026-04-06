@@ -13,7 +13,7 @@ const stats = [
 
 const categories = [
   {
-    title: "Tablets & Pellets",
+    title: "Tablets & Capsules",
     desc: "Anti-infectives, Cardiac, Diabetic, and Pain Management oral dosage forms.",
     image: "/tablets.avif",
     span: "md:col-span-8",
@@ -105,11 +105,21 @@ export default function Home() {
 
         if (window.gtag) {
           window.gtag('event', 'conversion', {
-            send_to: 'AW-747198314/obWbCP7n25YcEOqupeQC'
+            send_to: 'AW-747198314/obWbCP7n25YcEOqupeQC',
+            event_callback: () => {
+              navigate("/thank-you");
+            }
           });
+
+          // fallback (in case callback fails)
+          setTimeout(() => {
+            navigate("/thank-you");
+          }, 1000);
+
+        } else {
+          navigate("/thank-you");
         }
 
-        navigate("/thank-you");
       } else {
         throw new Error("Sheet error");
       }
@@ -139,7 +149,7 @@ export default function Home() {
               Precision in <span className="text-primary italic">Every Molecule.</span>
             </h1>
             <p className="text-xl text-on-surface-variant max-w-xl mb-10 leading-relaxed">
-              Partner with Biozoc’s legacy of <span className="font-bold text-on-surface">36 years</span> in pharmaceutical excellence. We empower entrepreneurs with a comprehensive Allopathic portfolio and exclusive market rights.
+              Partner with Biozoc’s legacy of <span className="font-bold text-on-surface">36 years</span> in pharmaceutical manufacturing excellence. We empower entrepreneurs with a comprehensive Allopathic portfolio and exclusive market rights.
             </p>
             <div className="flex flex-wrap gap-6 items-center">
               <div className="flex -space-x-3">
@@ -246,8 +256,8 @@ export default function Home() {
             </div>
             <a href="https://biozoc.com/products" target="_blank">
               <button className="text-secondary font-bold flex items-center gap-2 hover:gap-4 transition-all">
-              View Full Catalog <ArrowRight size={20} />
-            </button>
+                View Full Catalog <ArrowRight size={20} />
+              </button>
             </a>
           </div>
 
@@ -310,7 +320,7 @@ export default function Home() {
                 {[
                   { icon: FlaskConical, title: "In-House Formulation Lab", desc: "Our R&D team continuously works on bio-equivalence studies to ensure clinical efficacy comparable to global standards.", color: "bg-primary" },
                   { icon: Microscope, title: "GMP & WHO Certified Facility", desc: "Zero-contact automated manufacturing processes under controlled atmospheric conditions (ISO Class 7/8).", color: "bg-secondary" },
-                  { icon: ShoppingCart, title: "Robust Supply Chain", desc: "A network of 25+ depots nationwide ensures that stock replenishment reaches your doorstep within 48-72 hours.", color: "bg-tertiary" },
+                  { icon: ShoppingCart, title: "Reliable Distribution Support", desc: "With efficient order processing and logistics coordination, we ensure timely delivery and seamless availability for our PCD partners.", color: "bg-tertiary" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-8">
                     <div className={`flex-shrink-0 w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center text-white shadow-lg`}>
