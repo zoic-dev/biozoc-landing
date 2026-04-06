@@ -102,24 +102,7 @@ export default function Home() {
       const result = await res.json();
 
       if (result.status === "success") {
-
-        if (window.gtag) {
-          window.gtag('event', 'conversion', {
-            send_to: 'AW-747198314/obWbCP7n25YcEOqupeQC',
-            event_callback: () => {
-              navigate("/thank-you");
-            }
-          });
-
-          // fallback (in case callback fails)
-          setTimeout(() => {
-            navigate("/thank-you");
-          }, 1000);
-
-        } else {
-          navigate("/thank-you");
-        }
-
+        navigate("/thank-you");
       } else {
         throw new Error("Sheet error");
       }
