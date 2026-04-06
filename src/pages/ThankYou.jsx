@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 export default function ThankYou() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface px-6 pt-20">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-xl w-full bg-surface-container-lowest p-12 rounded-[3rem] shadow-2xl text-center border border-outline-variant"

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ShieldCheck, History, Package, Globe, Truck, ArrowRight, Star, FlaskConical, Microscope, ShoppingCart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const stats = [
-  { icon: History, label: "Experience", value: "36+ Years", color: "text-primary" },
+  { icon: History, label: "In Manufacturing", value: "36+ Years", color: "text-primary" },
   { icon: Package, label: "Product Portfolio", value: "1500+ SKUs", color: "text-secondary" },
   { icon: ShieldCheck, label: "Monopoly Rights", value: "Exclusive", color: "text-tertiary" },
   { icon: Globe, label: "Certified Units", value: "WHO-GMP", color: "text-secondary" },
@@ -12,31 +12,31 @@ const stats = [
 ];
 
 const categories = [
-  { 
-    title: "Tablets & Pellets", 
-    desc: "Anti-infectives, Cardiac, Diabetic, and Pain Management oral dosage forms.", 
-    image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=2070&auto=format&fit=crop", 
+  {
+    title: "Tablets & Pellets",
+    desc: "Anti-infectives, Cardiac, Diabetic, and Pain Management oral dosage forms.",
+    image: "/tablets.avif",
     span: "md:col-span-8",
     icon: "💊"
   },
-  { 
-    title: "Critical Care", 
-    desc: "Sterile Liquid & Dry Powder Injections manufactured in state-of-the-art HVAC rooms.", 
-    image: "https://images.unsplash.com/photo-1518152006812-edab29b069ac?q=80&w=2070&auto=format&fit=crop", 
+  {
+    title: "Critical Care",
+    desc: "Sterile Liquid & Dry Powder Injections manufactured in state-of-the-art HVAC rooms.",
+    image: "/critical.avif",
     span: "md:col-span-4",
     icon: "💉"
   },
-  { 
-    title: "Softgels & Hard-shell", 
-    desc: "High-stability capsule formulations for Nutraceuticals and Antibiotics.", 
-    image: "https://images.unsplash.com/photo-1550572017-ed20015dd085?q=80&w=2070&auto=format&fit=crop", 
+  {
+    title: "Softgels & Hard-shell",
+    desc: "High-stability capsule formulations for Nutraceuticals and Antibiotics.",
+    image: "/softgels.jpg",
     span: "md:col-span-4",
     icon: "💊"
   },
-  { 
-    title: "Pediatric & Syrups", 
-    desc: "Toxin-free, palatable liquid formulations including suspensions and drops.", 
-    image: "https://images.unsplash.com/photo-1587854692152-cbe660dbbb88?q=80&w=2070&auto=format&fit=crop", 
+  {
+    title: "Pediatric & Syrups",
+    desc: "Toxin-free, palatable liquid formulations including suspensions and drops.",
+    image: "/syrups.jpg",
     span: "md:col-span-8",
     icon: "🧪"
   },
@@ -47,28 +47,78 @@ const testimonials = [
     name: "Rahul Sharma",
     role: "Franchise Partner, Chandigarh",
     text: "Biozoc's commitment to quality and ethical monopoly rights helped me scale my distribution business by 300% in just two years. Highly recommended.",
-    image: "https://i.pravatar.cc/150?u=rahul"
+    image: "/user.jpg"
   },
   {
     name: "Arun Vishwakarma",
     role: "PCD Distributor, Bhopal",
     text: "The promotional support—MR bags, visual aids, and product samples—is world-class. It makes pitching to clinicians much more effective.",
-    image: "https://i.pravatar.cc/150?u=arun"
+    image: "/user.jpg"
   },
   {
     name: "S. Muralidharan",
     role: "Area Head, Coimbatore",
     text: "Their transparency in billing and massive stock availability even for critical care products has made them our go-to partner for Allopathic PCD.",
-    image: "https://i.pravatar.cc/150?u=murali"
+    image: "/user.jpg"
   }
 ];
 
 export default function Home() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/thank-you');
+
+    if (loading) return; // prevent double click
+
+    setLoading(true);
+
+    const formData = new FormData(e.target);
+
+    const phone = formData.get("phone")?.trim();
+
+    // ✅ Strict validation
+    const phoneRegex = /^[6-9]\d{9}$/;
+
+    if (!phoneRegex.test(phone)) {
+      alert("Please enter a valid 10-digit Indian mobile number");
+      return;
+    }
+
+    const data = {
+      name: formData.get("name"),
+      phone,
+      email: formData.get("email"),
+      message: formData.get("message"),
+    };
+
+    try {
+      const res = await fetch("https://script.google.com/macros/s/AKfycbzuv-_Ixe9mjnNUqMo9tOZCxkFWdMhmy_EeTbk-5X-AmFgWa2orErK1mAFqpBm4Md0l/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (result.status === "success") {
+
+        if (window.gtag) {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-747198314/obWbCP7n25YcEOqupeQC'
+          });
+        }
+
+        navigate("/thank-you");
+      } else {
+        throw new Error("Sheet error");
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Submission failed");
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,7 +126,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden py-16 md:py-24 bg-surface">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
@@ -94,11 +144,11 @@ export default function Home() {
             <div className="flex flex-wrap gap-6 items-center">
               <div className="flex -space-x-3">
                 {[1, 2, 3].map(i => (
-                  <img 
-                    key={i} 
-                    src={`https://i.pravatar.cc/150?u=${i}`} 
-                    alt="User" 
-                    className="w-12 h-12 rounded-full border-4 border-surface" 
+                  <img
+                    key={i}
+                    src={`https://i.pravatar.cc/150?u=${i}`}
+                    alt="User"
+                    className="w-12 h-12 rounded-full border-4 border-surface"
                     referrerPolicy="no-referrer"
                   />
                 ))}
@@ -109,13 +159,13 @@ export default function Home() {
           </motion.div>
 
           {/* Lead Capture Form */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative"
           >
-            <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+            <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/5 rounded-full blur-3xl" id="contact"></div>
             <div className="relative bg-surface-container-lowest p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-on-surface/5 border border-outline-variant">
               <h3 className="text-2xl font-bold text-on-surface mb-2">Request a Call Back</h3>
               <p className="text-on-surface-variant mb-8 text-sm">Fill in your details to receive our product brochure and monopoly rates.</p>
@@ -123,23 +173,39 @@ export default function Home() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Full Name</label>
-                    <input required className="w-full px-5 py-4 bg-surface-container-low rounded-2xl border-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Enter name" type="text" />
+                    <input name="name" required className="w-full px-5 py-4 bg-surface-container-low rounded-2xl border-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Enter name" type="text" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Phone Number</label>
-                    <input required className="w-full px-5 py-4 bg-surface-container-low rounded-2xl border-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="+91 00000 00000" type="tel" />
+                    <input
+                      name="phone"
+                      required
+                      type="tel"
+                      pattern="[6-9]{1}[0-9]{9}"
+                      maxLength="10"
+                      className="w-full px-5 py-4 bg-surface-container-low rounded-2xl border-none focus:ring-2 focus:ring-primary/20 transition-all"
+                      placeholder="Enter 10-digit mobile number"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/\D/g, '');
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Email Address</label>
-                  <input required className="w-full px-5 py-4 bg-surface-container-low rounded-2xl border-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="name@company.com" type="email" />
+                  <input name="email" required className="w-full px-5 py-4 bg-surface-container-low rounded-2xl border-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="name@company.com" type="email" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Location/Message</label>
-                  <textarea className="w-full px-5 py-4 bg-surface-container-low rounded-2xl border-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Preferred district for monopoly rights..." rows="3"></textarea>
+                  <textarea name="message" className="w-full px-5 py-4 bg-surface-container-low rounded-2xl border-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Preferred district for monopoly rights..." rows="3"></textarea>
                 </div>
-                <button type="submit" className="w-full primary-gradient text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 hover:scale-[0.98] transition-transform">
-                  Get Started Today
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full primary-gradient text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 transition-transform ${loading ? "opacity-70 cursor-not-allowed" : "hover:scale-[0.98]"
+                    }`}
+                >
+                  {loading ? "Submitting..." : "Get Started Today"}
                 </button>
               </form>
             </div>
@@ -148,11 +214,11 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-surface-container-low py-20">
+      <section className="bg-surface-container-low py-20" id="certifications">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12">
             {stats.map((stat, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -178,24 +244,26 @@ export default function Home() {
               <p className="text-primary font-bold text-sm tracking-[0.2em] uppercase mb-3">Portfolio</p>
               <h2 className="text-4xl md:text-5xl font-extrabold text-on-surface">Diverse Allopathic Ranges</h2>
             </div>
-            <button className="text-secondary font-bold flex items-center gap-2 hover:gap-4 transition-all">
+            <a href="https://biozoc.com/products" target="_blank">
+              <button className="text-secondary font-bold flex items-center gap-2 hover:gap-4 transition-all">
               View Full Catalog <ArrowRight size={20} />
             </button>
+            </a>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[320px]">
             {categories.map((cat, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.1 }}
                 className={`${cat.span} bg-surface-container-low rounded-[2.5rem] overflow-hidden group relative`}
               >
-                <img 
-                  src={cat.image} 
-                  alt={cat.title} 
-                  className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-1000" 
+                <img
+                  src={cat.image}
+                  alt={cat.title}
+                  className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-1000"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 p-10 flex flex-col justify-end bg-gradient-to-t from-surface-container-low/80 to-transparent">
@@ -213,16 +281,16 @@ export default function Home() {
       <section id="about" className="py-24 bg-surface-container-low overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               className="relative"
             >
               <div className="aspect-square bg-primary/5 rounded-full absolute -top-20 -left-20 w-80 h-80 blur-3xl"></div>
-              <img 
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop" 
-                alt="Manufacturing" 
-                className="rounded-[3.5rem] shadow-2xl relative z-10 w-full aspect-square object-cover" 
+              <img
+                src="/advanced.png"
+                alt="Manufacturing"
+                className="rounded-[3.5rem] shadow-2xl relative z-10 w-full aspect-square object-cover"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute -bottom-8 -right-8 bg-white p-10 rounded-[2.5rem] shadow-2xl z-20 max-w-xs border border-outline-variant">
@@ -237,7 +305,7 @@ export default function Home() {
             >
               <p className="text-primary font-bold text-sm tracking-[0.2em] uppercase mb-4">Our Manufacturing Strength</p>
               <h2 className="text-4xl md:text-5xl font-extrabold text-on-surface mb-10 leading-tight">Advanced R&D for Future Medicine</h2>
-              
+
               <div className="space-y-10">
                 {[
                   { icon: FlaskConical, title: "In-House Formulation Lab", desc: "Our R&D team continuously works on bio-equivalence studies to ensure clinical efficacy comparable to global standards.", color: "bg-primary" },
@@ -266,7 +334,7 @@ export default function Home() {
           <h2 className="text-4xl md:text-5xl font-extrabold mb-20">Success Stories from Partners</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
             {testimonials.map((t, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
